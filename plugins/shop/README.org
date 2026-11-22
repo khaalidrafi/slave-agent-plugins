@@ -1,0 +1,56 @@
+#+title: plugins/shop — read-only, config-driven storefront adapter
+
+- Stage: TRANSFER — the payload exists as commit ~51e1d196c8~ on the
+  ~ai/light-core~ island (not yet on any remote); it lands here when
+  the island transfer runs (slave-agent specs/007 req. 3, specs/013
+  req. 3). This charter records the contract; no stub code ships.
+- Origin: designed and built in the 2026-10-15 Qoder session
+  (slave-agent specs/005), 23/23 tests green at commit time.
+
+* What it gives the agent
+
+A read-only view of a real shop's order queue. Four tools:
+
+| Tool           | Returns                                  |
+|----------------+------------------------------------------|
+| ~shop_queue~   | the current order queue (paged)          |
+| ~shop_orders~  | orders matching filters                  |
+| ~shop_order~   | one order by id, full detail             |
+| ~shop_catalog~ | the product catalog                      |
+
+plus ~hermes shop~ (subcommand) and ~/shop~ (slash command).
+
+* Configuration (profile config.yaml)
+
+#+begin_src yaml
+  plugins:
+    entries:
+      shop:
+        settings:
+          base_url: https://shop.example/api     # required, else the
+          # path layout, filter names, status vocabulary and page
+          # shape are all settings too — one plugin serves any
+          # REST-shaped storefront; no client code, ever.
+#+end_src
+
+The tools exist only for a profile that configured a shop:
+~base_url~ set *and* the secret scope holding the token. The token is
+read through ~agent.secret_scope~ at *call time*, never at import (one
+process serves many profiles). Adapters cache per (settings, token).
+
+* Structural rules (from the core's law, unchanged by the move)
+
+1. *Money never routes through a model.* Every number a tool returns
+   is the shop's own API field; the only arithmetic is counting rows,
+   and each count carries provenance (~source: api~ for the shop's
+   total vs ~source: page~ for a tally over the page the model sees).
+2. *Read-only by construction.* No write path exists, and none lands
+   before an approve-before-send gate exists.
+3. *Client = configuration.* No client code, branding or data model
+   enters this plugin; deployments are settings.
+
+* Tests
+
+~tests/~ ships with the payload on transfer; the gate is the core's
+~scripts/run_tests.sh tests/plugins/test_shop_plugin.py~ (never bare
+pytest — CI parity).

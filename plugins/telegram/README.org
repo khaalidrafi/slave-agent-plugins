@@ -1,0 +1,53 @@
+#+title: plugins/telegram — Telegram bridge for slave-agent
+
+- Stage: CHARTER — contract only; no code exists anywhere yet
+  (verified 2026-11-22: no Telegram integration in any reachable
+  tree). Builds under this charter when the Owner dispatches it.
+
+* What it will give the agent
+
+A Telegram bridge via the official Bot API (the one supported surface;
+a userbot/MTCutor-style client is out of scope by law):
+
+| Tool (working name) | Returns / does                                |
+|---------------------+-----------------------------------------------|
+| ~tg_chats~          | recent chats the bot can see (read-only)       |
+| ~tg_messages~       | messages of one chat (read-only)               |
+| ~tg_send~           | send a message — *gated*, see below            |
+
+plus ~hermes tg~ (subcommand) and ~/tg~ (slash command).
+
+* Configuration (profile config.yaml)
+
+#+begin_src yaml
+  plugins:
+    entries:
+      telegram:
+        settings:
+          # bot endpoint / polling or webhook choice, chat allowlist
+          ...
+#+end_src
+
+The bot token rides the profile's secret scope and is read through
+~agent.secret_scope~ at *call time* — env var NAMES only, never in
+chat, files, commits or logs.
+
+* Structural rules
+
+1. *Read-only first.* ~tg_chats~ / ~tg_messages~ land before any send
+   path. ~tg_send~ exists only behind the approve-before-send gate
+   (Owner confirmation per outbound message); until the gate exists in
+   the core, this plugin ships no send tool at all.
+2. *Allowlist discipline.* A bot sees what it is added to; the plugin
+   respects an explicit per-profile chat allowlist before any tool
+   answers.
+3. *PII discipline.* Message bodies passing through the model are
+   redacted at the prompt boundary once the core's PII redactor lands
+   (slave-agent roadmap); until then the README states the exposure
+   honestly.
+
+* Tests
+
+~tests/~ with the implementation; gate is the core's
+~scripts/run_tests.sh tests/plugins/test_telegram_plugin.py~ (never
+bare pytest — CI parity).
