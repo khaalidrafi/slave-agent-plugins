@@ -1,11 +1,15 @@
 #+title: plugins/shop — read-only, config-driven storefront adapter
 
-- Stage: TRANSFER — the payload exists as commit ~51e1d196c8~ on the
-  ~ai/light-core~ island (not yet on any remote); it lands here when
-  the island transfer runs (slave-agent specs/007 req. 3, specs/013
-  req. 3). This charter records the contract; no stub code ships.
+- Stage: TRANSFERRED 2026-11-23 — the payload (plugin.yaml,
+  ~__init__.py~, ~adapter.py~ + the test suite) moved here from the
+  core tree per slave-agent specs/017 (Owner order 2026-11-22: shop is
+  not relevant to the slave-agent core). The core keeps plugin
+  machinery only; a home that configured a shop gets the plugin
+  installed automatically (LEFT_CORE migration row +
+  ~plugin-catalog/shop.yaml~ in the core).
 - Origin: designed and built in the 2026-10-15 Qoder session
-  (slave-agent specs/005), 23/23 tests green at commit time.
+  (slave-agent specs/005), 23/23 tests green at commit time;
+  provenance commit ~51e1d196c8~ on the ~ai/light-core~ island.
 
 * What it gives the agent
 

@@ -47,7 +47,7 @@ plugin's README documents its settings.
 
 | Plugin     | Stage    | What it gives the agent                                  |
 |------------|----------|----------------------------------------------------------|
-| `shop`     | transfer | Read-only, config-driven REST storefront adapter (order queue, orders, order, catalog). Code arrives with the light-core island transfer. |
+| `shop`     | transferred | Read-only, config-driven REST storefront adapter (order queue, orders, order, catalog) + `hermes shop` / `/shop`. Code + tests live here; installed via the core's plugin catalog. |
 | `whatsapp` | charter  | WhatsApp messaging bridge (read + gated send).           |
 | `telegram` | charter  | Telegram messaging bridge (read + gated send).           |
 
